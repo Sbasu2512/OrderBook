@@ -8,3 +8,7 @@ export const updateBuyOrders = (orders) => ({
     payload: orders,
   });
   
+  export const storeOrders = (order) => ({
+    type:"STORE_ORDERS",
+    payload:order,
+  })

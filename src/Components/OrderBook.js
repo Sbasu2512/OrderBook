@@ -25,10 +25,9 @@ const OrderItem = styled.li`
 function OrderBook() {
   const buyOrders = useSelector((state) => state.orderBook.buyOrders);
   const sellOrders = useSelector((state) => state.orderBook.sellOrders);
+  const orders = useSelector((state)=> console.log(state))
 
-  useEffect(() => {
-    // Websocket connection is already managed in websocketService.js
-  }, []);
+
 
   return (
     <OrderBookContainer>
@@ -36,25 +35,7 @@ function OrderBook() {
       <div>
         <h3>Buy Orders</h3>
         <OrderList>
-          {buyOrders.map((order, index) => (
-            <OrderItem key={index}>
-              <span>{order.price}</span>
-              <span>{order.amount}</span>
-              <span>{order.quantity}</span>
-            </OrderItem>
-          ))}
-        </OrderList>
-      </div>
-      <div>
-        <h3>Sell Orders</h3>
-        <OrderList>
-          {sellOrders.map((order, index) => (
-            <OrderItem key={index}>
-              <span>{order.price}</span>
-              <span>{order.amount}</span>
-              <span>{order.quantity}</span>
-            </OrderItem>
-          ))}
+        
         </OrderList>
       </div>
     </OrderBookContainer>
@@ -62,3 +43,12 @@ function OrderBook() {
 }
 
 export default OrderBook;
+
+
+// {sellOrders.map((order, index) => (
+//   <OrderItem key={index}>
+//     <span>{order.price}</span>
+//     <span>{order.amount}</span>
+//     <span>{order.quantity}</span>
+//   </OrderItem>
+// ))}

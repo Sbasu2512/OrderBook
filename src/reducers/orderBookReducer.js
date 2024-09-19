@@ -1,6 +1,7 @@
 const initialState = {
     buyOrders: [],
     sellOrders: [],
+    orders:[]
   };
   
   export default function orderBookReducer(state = initialState, action) {
@@ -15,6 +16,12 @@ const initialState = {
           ...state,
           sellOrders: action.payload,
         };
+      case  'STORE_ORDERS':
+        return {
+          ...state,
+          orders: [...state.orders, action.payload],
+        };
+        
       default:
         return state;
     }
