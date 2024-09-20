@@ -12,6 +12,7 @@ const OrderBookChart = ({ bids, asks }) => {
   const maxBidAmount = Math.max(...bids.map((b) => b.book_entries.amount));
   const maxAskAmount = Math.max(...asks.map((a) => a.book_entries.amount));
   const [precision, setPrecision] = useState(0);
+  const [divisionFactor, setdivisionFactor] = useState(1);
 
   const increasePrecision = () => {
     if (precision === null) {
@@ -55,10 +56,23 @@ const OrderBookChart = ({ bids, asks }) => {
       denom = 1;
     }
 
-    console.log((maxAskAmount / ask.book_entries.amount) * denom);
-    console.log(precision, denom);
     const p = (maxAskAmount / ask.book_entries.amount) * denom;
-    return `${p > 100 ? 98 : p}%`;
+
+    return `${p > 100 ? 98 / divisionFactor : p / divisionFactor}%`;
+  }
+
+  function getBidBarWidth(bid) {
+    return `${
+      (bid.book_entries.amount * 100) / maxBidAmount / divisionFactor
+    }%`;
+  }
+
+  function handleZoomIn() {
+    setdivisionFactor(1);
+  }
+
+  function handleZoomOut() {
+    setdivisionFactor(2);
   }
 
   return (
@@ -85,10 +99,14 @@ const OrderBookChart = ({ bids, asks }) => {
             </button>
           </span>
           <span className="ml-1">
-            <MdOutlineZoomOut />
+            <button onClick={handleZoomOut} className="btn-transparent">
+              <MdOutlineZoomOut />
+            </button>
           </span>
           <span className="ml-1">
-            <MdOutlineZoomIn />
+            <button onClick={handleZoomIn} className="btn-transparent">
+              <MdOutlineZoomIn />
+            </button>
           </span>
         </div>
       </div>
@@ -110,9 +128,7 @@ const OrderBookChart = ({ bids, asks }) => {
                     <div
                       className="bar-fill"
                       style={{
-                        width: `${
-                          (bid.book_entries.amount * 100) / maxBidAmount
-                        }%`,
+                        width: getBidBarWidth(bid),
                         right: 0,
                         backgroundColor: "rgb(18, 74, 80)",
                         position: "absolute",
