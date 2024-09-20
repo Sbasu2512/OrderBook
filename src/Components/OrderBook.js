@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import OrderBookChart from "./orderBookChart";
+import useWebSocket from "../services/websocketService";
 
 const OrderBookContainer = styled.div`
   display: flex;
@@ -12,20 +13,32 @@ const OrderBookContainer = styled.div`
   height: 100%;
 `;
 
-const OrderList = styled.ul`
-  list-style-type: none;
-  padding: 0;
-`;
-
-const OrderItem = styled.li`
-  display: flex;
-  justify-content: space-between;
-  width: 300px;
-`;
-
 function OrderBook() {
   const bids = useSelector((state) => state.orderBook.bids);
   const asks = useSelector((state) => state.orderBook.asks);
+  const precision = useSelector((state) => state.orderBook.selected_precision);
+
+  // useWebSocket({
+  //   url: "wss://api-pub.bitfinex.com/ws/2",
+  //   event: "subscribe",
+  //   channel: "book",
+  //   symbol: "tBTCUSD",
+  //   prec: precision ? precision : "P0",
+  // });
+
+  const { subscribe } = useWebSocket({
+    url: "wss://api-pub.bitfinex.com/ws/2",
+  });
+
+  useEffect(() => {
+    // Subscribe to the WebSocket with the current precision
+    subscribe({
+      event: "subscribe",
+      channel: "book",
+      symbol: "tBTCUSD",
+      prec: precision ? precision : "P0",
+    });
+  }, [precision]);
 
   return (
     <OrderBookContainer>
@@ -35,11 +48,3 @@ function OrderBook() {
 }
 
 export default OrderBook;
-
-// {sellOrders.map((order, index) => (
-//   <OrderItem key={index}>
-//     <span>{order.price}</span>
-//     <span>{order.amount}</span>
-//     <span>{order.quantity}</span>
-//   </OrderItem>
-// ))}

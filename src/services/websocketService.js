@@ -1,40 +1,34 @@
 import { useEffect } from "react";
-import {
-  updateBuyOrders,
-  updateSellOrders,
-  storeOrders,
-  StoreBids,
-  StoreAsks,
-} from "../actions/orderBookActions";
+import { StoreBids, StoreAsks } from "../actions/orderBookActions";
 import { store } from "../store";
 
-const useWebSocket = () => {
-  useEffect(() => {
-    const socket = new WebSocket("wss://api-pub.bitfinex.com/ws/2");
+const useWebSocket = ({ url }) => {
+  let socket;
+
+  const subscribe = ({ event, channel, symbol, prec }) => {
+    if (!socket) {
+      socket = new WebSocket(url);
+    }
 
     socket.onopen = () => {
       console.log("WebSocket Connected");
       socket.send(
         JSON.stringify({
-          event: "subscribe",
-          channel: "book",
-          symbol: "tBTCUSD",
+          event,
+          channel,
+          symbol,
+          prec,
         })
       );
     };
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      // incoming data all ==> [channelID, book_entries]
-      //incoming data for book entry ==> [price,count,amount]
-      //Total amount available at that price level.
-      //Trading: if AMOUNT > 0 then bid else ask
-      // console.log(data);
+      // Handle incoming data
       if (Array.isArray(data)) {
         if (Array.isArray(data[1]) && data[1].length === 3) {
-          // if AMOUNT > 0 then bid else ask
           if (data[1][2] > 0) {
-            //bid
+            // Bid
             store.dispatch(
               StoreBids({
                 channelId: data[0],
@@ -46,7 +40,7 @@ const useWebSocket = () => {
               })
             );
           } else {
-            //ask
+            // Ask
             store.dispatch(
               StoreAsks({
                 channelId: data[0],
@@ -58,29 +52,27 @@ const useWebSocket = () => {
               })
             );
           }
-        } else {
-          //bulk update
-          if (Array.isArray(data[1]) && data[1].length) {
-            data[1].forEach((x) => {
-              if (x[2] > 0) {
-                //bid
-                store.dispatch(
-                  StoreBids({
-                    channelId: data[0],
-                    book_entries: { price: x[0], count: x[1], amount: x[2] },
-                  })
-                );
-              } else {
-                //ask
-                store.dispatch(
-                  StoreAsks({
-                    channelId: data[0],
-                    book_entries: { price: x[0], count: x[1], amount: x[2] },
-                  })
-                );
-              }
-            });
-          }
+        } else if (Array.isArray(data[1]) && data[1].length) {
+          // Bulk update
+          data[1].forEach((x) => {
+            if (x[2] > 0) {
+              // Bid
+              store.dispatch(
+                StoreBids({
+                  channelId: data[0],
+                  book_entries: { price: x[0], count: x[1], amount: x[2] },
+                })
+              );
+            } else {
+              // Ask
+              store.dispatch(
+                StoreAsks({
+                  channelId: data[0],
+                  book_entries: { price: x[0], count: x[1], amount: x[2] },
+                })
+              );
+            }
+          });
         }
       }
     };
@@ -92,11 +84,9 @@ const useWebSocket = () => {
     socket.onerror = (error) => {
       console.error("WebSocket Error: ", error);
     };
+  };
 
-    // return () => {
-    //   socket.close();
-    // };
-  }, []);
+  return { subscribe };
 };
 
 export default useWebSocket;

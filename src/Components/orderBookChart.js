@@ -1,50 +1,86 @@
-import React from "react";
-import "./styles.css";
+import React, { useEffect, useState } from "react";
+import "./styles.scss";
 import { MdOutlineZoomIn } from "react-icons/md";
 import { MdOutlineZoomOut } from "react-icons/md";
 import { TbDecimal } from "react-icons/tb";
 import { GoArrowLeft } from "react-icons/go";
 import { GoArrowRight } from "react-icons/go";
+import { store } from "../store";
+import { changePrecision } from "../actions/orderBookActions";
 
 const OrderBookChart = ({ bids, asks }) => {
   const maxBidAmount = Math.max(...bids.map((b) => b.book_entries.amount));
   const maxAskAmount = Math.max(...asks.map((a) => a.book_entries.amount));
+  const [precision, setPrecision] = useState(0);
+
+  const increasePrecision = () => {
+    if (precision === null) {
+      store.dispatch(changePrecision(1));
+      setPrecision(1);
+    } else {
+      if (precision > 4) {
+        console.log("hit");
+        store.dispatch(changePrecision(4));
+        setPrecision(4);
+      } else {
+        store.dispatch(changePrecision(precision + 1));
+        setPrecision(precision + 1);
+      }
+    }
+  };
+
+  const decreasePrecision = () => {
+    if (precision === null) {
+      store.dispatch(changePrecision(0));
+      setPrecision(0);
+    } else {
+      if (precision === 0) {
+        store.dispatch(changePrecision(0));
+        setPrecision(0);
+      } else {
+        store.dispatch(changePrecision(precision - 1));
+        setPrecision(precision - 1);
+      }
+    }
+  };
 
   return (
     <div className="orderbook-container">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginRight: "1rem",
-        }}
-      >
-        <span style={{ display: "flex", flexDirection: "column" }}>
-          <TbDecimal />
-          <GoArrowLeft />
-        </span>
-        <span
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            marginLeft: "0.5rem",
-          }}
-        >
-          <TbDecimal />
-          <GoArrowRight />
-        </span>
-        <span style={{ marginLeft: "0.5rem" }}>
-          <MdOutlineZoomOut />
-        </span>
-        <span style={{ marginLeft: "0.5rem" }}>
-          <MdOutlineZoomIn />
-        </span>
+      <div className="head">
+        <div>OrderBook</div>
+        <div className="type-row">
+          <span>
+            <button
+              onClick={increasePrecision}
+              className="type-col btn-transparent"
+            >
+              <TbDecimal />
+              <GoArrowLeft />
+            </button>
+          </span>
+          <span>
+            <button
+              onClick={decreasePrecision}
+              className="type-col ml-1 btn-transparent"
+            >
+              <TbDecimal />
+              <GoArrowRight />
+            </button>
+          </span>
+          <span className="ml-1">
+            <MdOutlineZoomOut />
+          </span>
+          <span className="ml-1">
+            <MdOutlineZoomIn />
+          </span>
+        </div>
       </div>
+      <hr className="w-100" />
       <div className="orderbook-table">
         <div className="orderbook-bids">
           <table>
             <thead>
-              <tr>
+              <tr className="table-row">
                 <th>Amount</th>
                 <th>Total</th>
                 <th>Price</th>
@@ -95,7 +131,7 @@ const OrderBookChart = ({ bids, asks }) => {
         <div className="orderbook-asks">
           <table>
             <thead>
-              <tr>
+              <tr className="table-row">
                 <th>Price</th>
                 <th>Total</th>
                 <th>Amount</th>

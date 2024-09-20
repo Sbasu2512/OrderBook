@@ -1,23 +1,29 @@
+const precisions = ["P0", "P1", "P2", "P3", "P4"];
+
 const initialState = {
-  buyOrders: [],
-  sellOrders: [],
   orders: [],
   asks: [],
   bids: [],
+  selected_precision: 0,
 };
 
 export default function orderBookReducer(state = initialState, action) {
   switch (action.type) {
-    case "UPDATE_BUY_ORDERS":
-      return {
+    case "CHANGE_PRECISION":
+      let prec_idx;
+      if (action.payload > 4) {
+        prec_idx = 4;
+      } else if (action.payload < 0) {
+        prec_idx = 0;
+      } else {
+        prec_idx = action.payload;
+      }
+      const newState = {
         ...state,
-        buyOrders: action.payload,
+        selected_precision: precisions[prec_idx],
       };
-    case "UPDATE_SELL_ORDERS":
-      return {
-        ...state,
-        sellOrders: action.payload,
-      };
+      return newState;
+
     case "STORE_ORDERS":
       if (!Array.isArray(state.orders)) {
         return {

@@ -1,0 +1,129 @@
+.head {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 1rem;
+}
+
+.type-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.type-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ml-1 {
+  margin-left: 0.5rem;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.btn-transparent{
+  background-color: #1e1e2e;
+  color: #fff;
+  border: none;
+}
+
+.bid-row {
+  width: 100%;
+  height: 30px;
+  background-color: #172d3e;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.orderbook-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1e2e;
+  color: white;
+  padding: 10px;
+  width: 98%;
+}
+
+.orderbook-table {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.orderbook-bids,
+.orderbook-asks {
+  width: 50%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.table-row {
+  /* text-align: left; */
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+th,
+td {
+  padding: 5px;
+  text-align: left;
+}
+
+td {
+  position: relative;
+}
+
+.bar-cell {
+  position: relative;
+  padding: 0;
+}
+
+.bar-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  z-index: 1;
+}
+
+@keyframes grow-left {
+  from {
+    width: 0;
+    right: 0;
+    transform: translateX(0);
+  }
+
+  to {
+    width: 100%;
+    right: 0;
+    transform: translateX(0);
+  }
+}
+
+@keyframes grow-right {
+  from {
+    width: 0;
+    left: 0;
+    transform: translateX(0);
+  }
+
+  to {
+    width: 100%;
+    left: 0;
+    transform: translateX(0);
+  }
+}
+
+.bar-cell > div {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
