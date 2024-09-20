@@ -9,8 +9,8 @@ import { store } from "../store";
 import { changePrecision } from "../actions/orderBookActions";
 
 const OrderBookChart = ({ bids, asks }) => {
-  const maxBidAmount = Math.max(...bids.map((b) => b.book_entries.amount));
-  const maxAskAmount = Math.max(...asks.map((a) => a.book_entries.amount));
+  const maxBidAmount = Math.max(...bids.map((b) => b?.book_entries?.amount));
+  const maxAskAmount = Math.max(...asks.map((a) => a?.book_entries?.amount));
   const [precision, setPrecision] = useState(0);
   const [divisionFactor, setdivisionFactor] = useState(1);
 
@@ -56,14 +56,14 @@ const OrderBookChart = ({ bids, asks }) => {
       denom = 1;
     }
 
-    const p = (maxAskAmount / ask.book_entries.amount) * denom;
+    const p = (maxAskAmount / ask?.book_entries?.amount) * denom;
 
     return `${p > 100 ? 98 / divisionFactor : p / divisionFactor}%`;
   }
 
   function getBidBarWidth(bid) {
     return `${
-      (bid.book_entries.amount * 100) / maxBidAmount / divisionFactor
+      (bid?.book_entries?.amount * 100) / maxBidAmount / divisionFactor
     }%`;
   }
 
@@ -116,7 +116,8 @@ const OrderBookChart = ({ bids, asks }) => {
           <table>
             <thead>
               <tr className="table-row">
-                <th>Amount</th>
+                <th>Count</th>
+                <th className="mr-1">Amount</th>
                 <th>Total</th>
                 <th>Price</th>
               </tr>
@@ -147,13 +148,14 @@ const OrderBookChart = ({ bids, asks }) => {
                         padding: "0 10px",
                       }}
                     >
-                      <span>{bid.book_entries.amount.toFixed(4)}</span>
+                      <span>{bid?.book_entries?.count}</span>
+                      <span>{bid?.book_entries?.amount.toFixed(4)}</span>
                       <span>
                         {(
-                          bid.book_entries.price * bid.book_entries.amount
+                          bid?.book_entries?.price * bid?.book_entries?.amount
                         ).toFixed(2)}
                       </span>
-                      <span>{bid.book_entries.price}</span>
+                      <span>{bid?.book_entries?.price}</span>
                     </div>
                   </td>
                 </tr>
@@ -166,8 +168,9 @@ const OrderBookChart = ({ bids, asks }) => {
             <thead>
               <tr className="table-row">
                 <th>Price</th>
-                <th>Total</th>
-                <th>Amount</th>
+                <th className="ml-3">Total</th>
+                <th className="ml-1">Amount</th>
+                <th>Count</th>
               </tr>
             </thead>
             <tbody>
@@ -195,13 +198,14 @@ const OrderBookChart = ({ bids, asks }) => {
                         padding: "0 10px",
                       }}
                     >
-                      <span>{ask.book_entries.price}</span>
+                      <span>{ask?.book_entries?.price}</span>
                       <span>
                         {(
-                          ask.book_entries.price * ask.book_entries.amount
+                          ask?.book_entries?.price * ask?.book_entries?.amount
                         ).toFixed(2)}
                       </span>
-                      <span>{ask.book_entries.amount.toFixed(4)}</span>
+                      <span>{ask?.book_entries?.amount?.toFixed(4)}</span>
+                      <span>{ask?.book_entries?.count}</span>
                     </div>
                   </td>
                 </tr>
