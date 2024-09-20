@@ -30,7 +30,7 @@ function OrderBook() {
       symbol: "tBTCUSD",
       prec: precision ? precision : "P0",
     });
-  }, [precision, subscribe]);
+  }, [precision]);
 
   return (
     <OrderBookContainer>

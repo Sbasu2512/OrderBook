@@ -4,7 +4,7 @@ const initialState = {
   orders: [],
   asks: [],
   bids: [],
-  selected_precision: 0,
+  selected_precision: "P0",
 };
 
 export default function orderBookReducer(state = initialState, action) {
@@ -53,60 +53,48 @@ export default function orderBookReducer(state = initialState, action) {
       }
 
     case "ASKS":
-      if (!Array.isArray(state.asks)) {
-        return {
-          ...state,
-          asks: [action.payload], // Initialize as array if it's not already
-        };
-      }
+      // Ensure `asks` is initialized as an array
+      let currentAsks = Array.isArray(state.asks) ? [...state.asks] : [];
 
-      const index = state?.asks?.findIndex(
-        (order) => order.channelId === action.payload.channelId
-      );
+      // Use a map to track the latest `channelId` entries
+      const asksMap = new Map();
 
-      if (index === -1) {
-        return {
-          ...state,
-          asks: [...state.asks, action.payload],
-        };
-      } else {
-        const newArr = [...state.asks];
+      // Add current state `asks` to the map
+      currentAsks.forEach((ask) => {
+        asksMap.set(ask.channelId, ask);
+      });
 
-        newArr[index].book_entries = action.payload.book_entries;
+      // Iterate over the incoming payload, overwriting any duplicates by `channelId`
+      action.payload.forEach((newAsk) => {
+        asksMap.set(newAsk.channelId, newAsk); // Last one wins
+      });
 
-        return {
-          ...state,
-          asks: newArr,
-        };
-      }
+      return {
+        ...state,
+        asks: Array.from(asksMap.values()), // Convert the map back into an array
+      };
 
     case "BIDS":
-      if (!Array.isArray(state.asks)) {
-        return {
-          ...state,
-          bids: [action.payload], // Initialize as array if it's not already
-        };
-      }
+      // Ensure `bids` is initialized as an array
+      let currentBids = Array.isArray(state.bids) ? [...state.bids] : [];
 
-      const idx = state?.bids?.findIndex(
-        (order) => order.channelId === action.payload.channelId
-      );
+      // Use a map to track the latest `channelId` entries
+      const bidsMap = new Map();
 
-      if (idx === -1) {
-        return {
-          ...state,
-          bids: [...state.bids, action.payload],
-        };
-      } else {
-        const newArr = [...state.bids];
+      // Add current state `bids` to the map
+      currentBids.forEach((bid) => {
+        bidsMap.set(bid.channelId, bid);
+      });
 
-        newArr[idx].book_entries = action.payload.book_entries;
+      // Iterate over the incoming payload, overwriting any duplicates by `channelId`
+      action.payload.forEach((newBid) => {
+        bidsMap.set(newBid.channelId, newBid); // Last one wins
+      });
 
-        return {
-          ...state,
-          bids: newArr,
-        };
-      }
+      return {
+        ...state,
+        bids: Array.from(bidsMap.values()), // Convert the map back into an array
+      };
 
     default:
       return state;
