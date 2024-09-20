@@ -9,8 +9,17 @@ import { store } from "../store";
 import { changePrecision } from "../actions/orderBookActions";
 
 const OrderBookChart = ({ bids, asks }) => {
-  const maxBidAmount = Math.max(...bids.map((b) => b?.book_entries?.amount));
-  const maxAskAmount = Math.max(...asks.map((a) => a?.book_entries?.amount));
+  const maxBidAmount = Math.max(
+    ...bids
+      .map((b) => b?.book_entries?.amount)
+      .filter((amount) => amount !== undefined && amount !== null)
+  );
+
+  const maxAskAmount = Math.max(
+    ...asks
+      .map((a) => a?.book_entries?.amount)
+      .filter((amount) => amount !== undefined && amount !== null)
+  );
   const [precision, setPrecision] = useState(0);
   const [divisionFactor, setdivisionFactor] = useState(1);
 
@@ -62,9 +71,9 @@ const OrderBookChart = ({ bids, asks }) => {
   }
 
   function getBidBarWidth(bid) {
-    return `${
-      (bid?.book_entries?.amount * 100) / maxBidAmount / divisionFactor
-    }%`;
+    let p = (bid?.book_entries?.amount * 100) / maxBidAmount;
+    // console.log("bid", divisionFactor, p);
+    return `${p / divisionFactor}%`;
   }
 
   function handleZoomIn() {
@@ -146,14 +155,24 @@ const OrderBookChart = ({ bids, asks }) => {
                         display: "flex",
                         justifyContent: "space-between",
                         padding: "0 10px",
+                        visibility: isNaN(
+                          bid?.book_entries?.price * bid?.book_entries?.amount
+                        )
+                          ? "hidden"
+                          : "visible",
                       }}
                     >
                       <span>{bid?.book_entries?.count}</span>
                       <span>{bid?.book_entries?.amount.toFixed(4)}</span>
                       <span>
-                        {(
+                        {!isNaN(
                           bid?.book_entries?.price * bid?.book_entries?.amount
-                        ).toFixed(2)}
+                        )
+                          ? (
+                              bid?.book_entries?.price *
+                              bid?.book_entries?.amount
+                            ).toFixed(2)
+                          : null}
                       </span>
                       <span>{bid?.book_entries?.price}</span>
                     </div>
@@ -196,13 +215,23 @@ const OrderBookChart = ({ bids, asks }) => {
                         display: "flex",
                         justifyContent: "space-between",
                         padding: "0 10px",
+                        visibility: isNaN(
+                          ask?.book_entries?.price * ask?.book_entries?.amount
+                        )
+                          ? "hidden"
+                          : "visible",
                       }}
                     >
                       <span>{ask?.book_entries?.price}</span>
                       <span>
-                        {(
+                        {!isNaN(
                           ask?.book_entries?.price * ask?.book_entries?.amount
-                        ).toFixed(2)}
+                        )
+                          ? (
+                              ask?.book_entries?.price *
+                              ask?.book_entries?.amount
+                            ).toFixed(2)
+                          : null}
                       </span>
                       <span>{ask?.book_entries?.amount?.toFixed(4)}</span>
                       <span>{ask?.book_entries?.count}</span>

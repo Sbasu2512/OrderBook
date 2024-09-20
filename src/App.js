@@ -10,7 +10,6 @@ function App() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <div className="App">
-          <h1>Order Book</h1>
           <OrderBook />
         </div>
       </PersistGate>

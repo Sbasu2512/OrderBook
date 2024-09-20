@@ -18,14 +18,6 @@ function OrderBook() {
   const asks = useSelector((state) => state.orderBook.asks);
   const precision = useSelector((state) => state.orderBook.selected_precision);
 
-  // useWebSocket({
-  //   url: "wss://api-pub.bitfinex.com/ws/2",
-  //   event: "subscribe",
-  //   channel: "book",
-  //   symbol: "tBTCUSD",
-  //   prec: precision ? precision : "P0",
-  // });
-
   const { subscribe } = useWebSocket({
     url: "wss://api-pub.bitfinex.com/ws/2",
   });
@@ -38,7 +30,7 @@ function OrderBook() {
       symbol: "tBTCUSD",
       prec: precision ? precision : "P0",
     });
-  }, [precision]);
+  }, [precision, subscribe]);
 
   return (
     <OrderBookContainer>
