@@ -19,7 +19,6 @@ const OrderBookChart = ({ bids, asks }) => {
       setPrecision(1);
     } else {
       if (precision > 4) {
-        console.log("hit");
         store.dispatch(changePrecision(4));
         setPrecision(4);
       } else {
@@ -43,6 +42,24 @@ const OrderBookChart = ({ bids, asks }) => {
       }
     }
   };
+
+  function getAskBarWidth(ask) {
+    let denom = 10000;
+    if (precision === 1) {
+      denom = 1000;
+    } else if (precision === 2) {
+      denom = 100;
+    } else if (precision === 3) {
+      denom = 100;
+    } else if (precision === 4) {
+      denom = 1;
+    }
+
+    console.log((maxAskAmount / ask.book_entries.amount) * denom);
+    console.log(precision, denom);
+    const p = (maxAskAmount / ask.book_entries.amount) * denom;
+    return `${p > 100 ? 98 : p}%`;
+  }
 
   return (
     <div className="orderbook-container">
@@ -144,9 +161,7 @@ const OrderBookChart = ({ bids, asks }) => {
                     <div
                       className="bar-fill"
                       style={{
-                        width: `${
-                          ask.book_entries.amount / (maxAskAmount * 1000)
-                        }%`,
+                        width: getAskBarWidth(ask),
                         left: 0,
                         backgroundColor: "rgb(64, 55, 68)",
                         position: "absolute",
